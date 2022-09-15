@@ -4,8 +4,7 @@ import './App.css';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoidGFtYWdyYW0iLCJhIjoiY2w4Mnhxdm16MDBjajNwcXI1Z3ExaXoxZSJ9.UvQSNs_jPKq2FJvQlFIb7Q';
-
+mapboxgl.accessToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN
 
 export default function App() {
   const mapContainer = useRef(null);
