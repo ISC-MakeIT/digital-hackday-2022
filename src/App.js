@@ -9,17 +9,17 @@ mapboxgl.accessToken = 'pk.eyJ1IjoidGFtYWdyYW0iLCJhIjoiY2w4Mnhxdm16MDBjajNwcXI1Z
 export default function App() {
   const mapContainer = useRef(null);
   const map = useRef(null);
+  const marker = useRef(null);
   const [lng, setLng] = useState(-70.9);
   const [lat, setLat] = useState(42.35);
-  const [zoom, setZoom] = useState(9);
+  const [zoom, setZoom] = useState(15);
 
   const [watchId, setWatchId] = useState(null);
-  // const [position, setPosition] = useState({latitude: 42.35, longitude: -70.9})
+  const [currentLocationMarker, setCurrentLocationMarker] = useState(null);
 
   const startWatchPosition = () => {
     const watchId = navigator.geolocation.watchPosition(position => {
       const {latitude, longitude} = position.coords;
-      // setPosition({latitude, longitude})
       setLat(latitude)
       setLng(longitude)
     })
@@ -39,6 +39,10 @@ export default function App() {
       center: [lng, lat],
       zoom: zoom
     });
+    // Create a new marker.
+    marker.current = new mapboxgl.Marker()
+      .setLngLat([lng, lat])
+      .addTo(map.current);
   });
 
   // useEffect(() => {
@@ -60,7 +64,9 @@ export default function App() {
       center: [lng, lat],
       zoom: zoom
     });
+    marker.current.setLngLat([lng, lat])
   }, [lat, lng])
+
 
   return (
     <div>
