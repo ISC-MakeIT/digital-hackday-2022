@@ -2,6 +2,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
+import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoidGFtYWdyYW0iLCJhIjoiY2w4Mnhxdm16MDBjajNwcXI1Z3ExaXoxZSJ9.UvQSNs_jPKq2FJvQlFIb7Q';
 
@@ -39,11 +40,37 @@ export default function App() {
       center: [lng, lat],
       zoom: zoom
     });
+
+    const language = new MapboxLanguage();
+    map.current.addControl(language);
+
     // Create a new marker.
     marker.current = new mapboxgl.Marker()
       .setLngLat([lng, lat])
       .addTo(map.current);
   });
+
+  useEffect(() => {
+    map.current.on('load', () => {
+      map.current.addSource('earthquakes', {
+        type: 'geojson',
+        // Use a URL for the value for the `data` property.
+        data: 'https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson'
+      });
+
+      map.current.addLayer({
+        'id': 'earthquakes-layer',
+        'type': 'circle',
+        'source': 'earthquakes',
+        'paint': {
+          'circle-radius': 4,
+          'circle-stroke-width': 2,
+          'circle-color': 'red',
+          'circle-stroke-color': 'white'
+        }
+      });
+    });
+  })
 
   // useEffect(() => {
   //   if (!map.current) return; // wait for map to initialize
