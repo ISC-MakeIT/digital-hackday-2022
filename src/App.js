@@ -1,21 +1,46 @@
 import React, {useRef, useEffect, useState} from 'react';
-// import logo from './logo.svg';
 import './App.css';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 
 mapboxgl.accessToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN
 
+const initLocation = {
+  lng: 140,
+  lat: 36,
+}
+const mapStyle = 'mapbox://styles/mapbox/streets-v11';
+
 export default function App() {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const marker = useRef(null);
-  const [lng, setLng] = useState(-70.9);
-  const [lat, setLat] = useState(42.35);
+  const [lng, setLng] = useState(initLocation.lng);
+  const [lat, setLat] = useState(initLocation.lat);
   const [zoom,] = useState(15);
-
   const [watchId, setWatchId] = useState(null);
 
+  // 初期化
+  useEffect(() => {
+    if (map.current) return;
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: mapStyle,
+      center: [lng, lat],
+      zoom: zoom
+    });
+
+    // 日本語化
+    const language = new MapboxLanguage();
+    map.current.addControl(language);
+
+    // 現在地marker
+    marker.current = new mapboxgl.Marker()
+      .setLngLat([lng, lat])
+      .addTo(map.current);
+  });
+
+  // 追跡
   const startWatchPosition = () => {
     const watchId = navigator.geolocation.watchPosition(position => {
       const {latitude, longitude} = position.coords;
@@ -24,36 +49,28 @@ export default function App() {
     })
     setWatchId(watchId)
   }
-
   const stopWatchPosition = () => {
     navigator.geolocation.clearWatch(watchId)
     setWatchId(null)
   }
-
   useEffect(() => {
-    if (map.current) return; // initialize map only once
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
+    startWatchPosition()
+    return stopWatchPosition()
+  })
+  useEffect(() => {
+    map.current.flyTo({
       center: [lng, lat],
       zoom: zoom
     });
+    marker.current.setLngLat([lng, lat])
+  }, [lat, lng, zoom])
 
-    const language = new MapboxLanguage();
-    map.current.addControl(language);
 
-    // Create a new marker.
-    marker.current = new mapboxgl.Marker()
-      .setLngLat([lng, lat])
-      .addTo(map.current);
-  });
-
+  // 店舗情報をロード
   useEffect(() => {
     map.current.on('load', () => {
       map.current.addSource('store', {
         type: 'geojson',
-        // Use a URL for the value for the `data` property.
-        // data: '../example.json'
         data: {
           "type": "FeatureCollection",
           "features": [
@@ -107,6 +124,7 @@ export default function App() {
         }
       });
 
+      // クリックした時ポップアップを表示
       map.current.on('click', 'store-layer', (e) => {
         new mapboxgl.Popup()
           .setLngLat(e.lngLat)
@@ -114,42 +132,17 @@ export default function App() {
           .addTo(map.current);
       });
 
-      // Change the cursor to a pointer when
-      // the mouse is over the states layer.
+      // マウスをホバーした時
       map.current.on('mouseenter', 'store-layer', () => {
         map.current.getCanvas().style.cursor = 'pointer';
       });
 
-      // Change the cursor back to a pointer
-      // when it leaves the states layer.
+      // マウスが離れた時
       map.current.on('mouseleave', 'store-layer', () => {
         map.current.getCanvas().style.cursor = '';
       });
     });
   })
-
-  // useEffect(() => {
-  //   if (!map.current) return; // wait for map to initialize
-  //   map.current.on('move', () => {
-  //     setLng(map.current.getCenter().lng.toFixed(4));
-  //     setLat(map.current.getCenter().lat.toFixed(4));
-  //     setZoom(map.current.getZoom().toFixed(2));
-  //   });
-  // });
-
-  useEffect(() => {
-    startWatchPosition()
-    return stopWatchPosition()
-  })
-
-  useEffect(() => {
-    map.current.flyTo({
-      center: [lng, lat],
-      zoom: zoom
-    });
-    marker.current.setLngLat([lng, lat])
-  }, [lat, lng, zoom])
-
 
   return (
     <div>
