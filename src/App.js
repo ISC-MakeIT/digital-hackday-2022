@@ -50,22 +50,80 @@ export default function App() {
 
   useEffect(() => {
     map.current.on('load', () => {
-      map.current.addSource('earthquakes', {
+      map.current.addSource('store', {
         type: 'geojson',
         // Use a URL for the value for the `data` property.
-        data: 'https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson'
+        // data: '../example.json'
+        data: {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [139.5924792859, 35.459082011]
+              },
+              "properties": {
+                "id": "J001270044",
+                "name": "つきじ海賓 星川店",
+                "name_kana": "つきじかいひん　ほしかわてん",
+                "address": "神奈川県横浜市保土ケ谷区星川２－５－２２",
+                "station_name": "星川",
+                "genre": {
+                  "name": "和食",
+                  "catch": "宅配寿司なら「つきじ海賓」"
+                },
+                "average": "",
+                "access": "相鉄本線星川(神奈川)駅南口より徒歩約4分",
+                "urls": {
+                  "pc": "https://www.hotpepper.jp/strJ001270044/?vos=nhppalsa000016"
+                },
+                "photo": {
+                  "pc": {
+                    "s": "https://imgfp.hotp.jp/IMGH/88/68/P037818868/P037818868_58_s.jpg"
+                  },
+                  "Mobile": {
+                    "s": "https://imgfp.hotp.jp/IMGH/88/68/P037818868/P037818868_100.jpg"
+                  }
+                },
+                "open": "月～日、祝日、祝前日: 11:00～20:45",
+                "close": "年中無休",
+                "midnight": "営業していない"
+              }
+            }
+          ]
+        }
       });
 
       map.current.addLayer({
-        'id': 'earthquakes-layer',
+        'id': 'store-layer',
         'type': 'circle',
-        'source': 'earthquakes',
+        'source': 'store',
         'paint': {
-          'circle-radius': 4,
+          'circle-radius': 10,
           'circle-stroke-width': 2,
           'circle-color': 'red',
           'circle-stroke-color': 'white'
         }
+      });
+
+      map.current.on('click', 'store-layer', (e) => {
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(e.features[0].properties.name)
+          .addTo(map.current);
+      });
+
+      // Change the cursor to a pointer when
+      // the mouse is over the states layer.
+      map.current.on('mouseenter', 'store-layer', () => {
+        map.current.getCanvas().style.cursor = 'pointer';
+      });
+
+      // Change the cursor back to a pointer
+      // when it leaves the states layer.
+      map.current.on('mouseleave', 'store-layer', () => {
+        map.current.getCanvas().style.cursor = '';
       });
     });
   })
