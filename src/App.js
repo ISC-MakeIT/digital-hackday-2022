@@ -1,5 +1,5 @@
 import React, {useRef, useEffect, useState} from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
@@ -12,10 +12,9 @@ export default function App() {
   const marker = useRef(null);
   const [lng, setLng] = useState(-70.9);
   const [lat, setLat] = useState(42.35);
-  const [zoom, setZoom] = useState(15);
+  const [zoom,] = useState(15);
 
   const [watchId, setWatchId] = useState(null);
-  const [currentLocationMarker, setCurrentLocationMarker] = useState(null);
 
   const startWatchPosition = () => {
     const watchId = navigator.geolocation.watchPosition(position => {
@@ -91,7 +90,7 @@ export default function App() {
       zoom: zoom
     });
     marker.current.setLngLat([lng, lat])
-  }, [lat, lng])
+  }, [lat, lng, zoom])
 
 
   return (
