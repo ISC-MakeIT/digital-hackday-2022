@@ -1,15 +1,7 @@
 [apiのリファレンス](https://webservice.recruit.co.jp/doc/hotpepper/reference.html)
 
 
-ファイル構成
-root
-  infrastructure
-    config.go
-    Routing.go
-  usecase
-    xxx.go
-  docker-compose.yml
-  main.go
+
 
 
 
@@ -37,9 +29,7 @@ root
             - s  // sサイズの写真
     - open       // 営業時間　曜日
     - close      // 定休日
-    - midnight   // 23時以降も営業してるか？
-
-
+    - midnight   // 23時以降も営
 # 開発の役に立ちそうな情報
 ## mapbox
 - 数字は10進法の度数で、緯度は-90〜90、経度は-180〜180の範囲で表されます。

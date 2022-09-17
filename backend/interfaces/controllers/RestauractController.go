@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"errors"
+
 	"github.com/ISC-MakeIT/digital-hackday-2022/interfaces/api"
 	"github.com/ISC-MakeIT/digital-hackday-2022/interfaces/models"
 )
-
 
 type (
 	FindNearbyRestaurantRequest struct {
@@ -42,7 +42,7 @@ func (r *RestaurantController) FindNearbyRestaurant(ctx Context) error {
 	}
 	reqModel, err := toModel(req)
 	if err != nil {
-		return nil
+		return err
 	}
 	ResultAPI, err := r.Interactor.Find(reqModel)
 	if err != nil {

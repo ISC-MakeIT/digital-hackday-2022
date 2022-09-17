@@ -9,14 +9,15 @@ import (
 	"github.com/ISC-MakeIT/digital-hackday-2022/interfaces/models"
 )
 
-type RestaurantRepository struct {}
+type RestaurantRepository struct{}
 
 func (repo *RestaurantRepository) Find(data *models.RequestModel) (*models.Response, error) {
-	// ここにキーを貼り付けてください
-	
-	key := "2490fa54f7630e43"
+	key, err := repo.FetchKey()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(key)
 	url := "https://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key=" + key + "&lat=" + data.GetLatiude() + "&lng=" + data.GetLongitude() + "&range=" + data.GetAreaRange() + "&format=json"
-	fmt.Println(url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -27,7 +28,6 @@ func (repo *RestaurantRepository) Find(data *models.RequestModel) (*models.Respo
 		return nil, err
 	}
 	var F models.Response
-	// data := make([]Item, 0) のように要素数0の slice としても良い
 
 	if err := json.Unmarshal(body, &F); err != nil {
 		return nil, err
