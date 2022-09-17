@@ -2,6 +2,7 @@ import React, {useRef, useEffect, useState} from 'react';
 import './App.css';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
+import * as MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
 
 mapboxgl.accessToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN
 
@@ -38,6 +39,15 @@ const CurrentMap = () => {
     marker.current = new mapboxgl.Marker()
       .setLngLat([lng, lat])
       .addTo(map.current);
+
+    // ルーティング
+    const directions = new MapboxDirections({
+      accessToken: mapboxgl.accessToken,
+      unit: 'metric',
+      profile: 'mapbox/driving',
+      language: 'ja'
+    });
+    map.current.addControl(directions, 'top-left');
   });
 
   // 追跡
