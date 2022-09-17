@@ -1,41 +1,49 @@
-import 'mapbox-gl/dist/mapbox-gl.css'
-import 'react-map-gl-directions/dist/mapbox-gl-directions.css'
-import React from 'react'
-import MapGL from 'react-map-gl'
-import Directions from 'react-map-gl-directions'
+import React, {useEffect} from 'react';
+import './App.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import * as MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
+import {
+  RulerControl,
+  StylesControl,
+  CompassControl,
+  ZoomControl,
+} from 'mapbox-gl-controls';
 
+mapboxgl.accessToken = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN
+const App = () => {
+  useEffect(() => {
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v10',
+      center: [-73.985664, 40.748514],
+      zoom: 12,
+    });
 
-// Ways to set Mapbox token: https://uber.github.io/react-map-gl/#/Documentation/getting-started/about-mapbox-tokens
-const MAPBOX_TOKEN = process.env.REACT_APP_MAP_BOX_ACCESS_TOKEN
+    const directions = new MapboxDirections({
+      accessToken: mapboxgl.accessToken,
+      unit: 'metric',
+      profile: 'mapbox/driving',
+    });
 
-const NewMap = () => {
-  state = {
-    viewport: {
-      latitude: 37.7577,
-      longitude: -122.4376,
-      zoom: 8,
-    },
-  }
+    // Directions
+    map.addControl(directions, 'top-left');
 
-  mapRef = React.createRef()
+    // Ruler
+    map.addControl(new RulerControl(), 'top-right');
+    map.on('ruler.on', () => console.log('ruler: on'));
+    map.on('ruler.off', () => console.log('ruler: off'));
 
-  handleViewportChange = (viewport) => {
-    this.setState({
-      viewport: {...this.state.viewport, ...viewport},
-    })
-  }
+    // Styles
+    map.addControl(new StylesControl(), 'bottom-left');
 
-  return (
-    <MapGL
-      ref={this.mapRef}
-      {...this.state.viewport}
-      width="100%"
-      height="100%"
-      onViewportChange={this.handleViewportChange}
-      mapboxApiAccessToken={MAPBOX_TOKEN}>
-      <Directions mapRef={this.mapRef} mapboxApiAccessToken={MAPBOX_TOKEN} />
-    </MapGL>
-  )
-}
+    // Compass
+    map.addControl(new CompassControl(), 'top-right');
 
-export default NewMap
+    // Zoom
+    map.addControl(new ZoomControl(), 'top-right');
+  });
+  return <div className="mapWrapper" id="map" />;
+};
+
+export default App;
