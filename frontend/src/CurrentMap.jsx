@@ -45,7 +45,11 @@ const CurrentMap = () => {
       accessToken: mapboxgl.accessToken,
       unit: 'metric',
       profile: 'mapbox/driving',
-      language: 'ja'
+      language: 'ja',
+      controls: {
+        inputs: false,
+        instructions: false
+      }
     });
     map.current.addControl(directions, 'top-left');
   });
