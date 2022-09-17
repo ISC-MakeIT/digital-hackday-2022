@@ -1,6 +1,6 @@
 version: '3'
 services:
-  backend-api:
+  backend_api:
     build:
       context: ./backend
       dockerfile: ./Dockerfile
@@ -10,3 +10,13 @@ services:
     ports:
       - 8000:8080
 
+  front:
+    build:
+      context: ./frontend
+    stdin_open: true
+    volumes:
+      - ./frontend:/app
+    ports:
+      - 3000:3000
+    depends_on: 
+      - backend_api
